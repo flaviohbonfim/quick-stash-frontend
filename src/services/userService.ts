@@ -7,8 +7,8 @@ export interface ChangePasswordRequest {
 }
 
 export const userService = {
-  async getUser(): Promise<User> {
-    const response = await api.get<User>('/users')
+  async getUser(userId: string): Promise<User> {
+    const response = await api.get<User>(`/users/${userId}`)
     return response.data
   },
 
@@ -17,8 +17,8 @@ export const userService = {
     return response.data
   },
 
-  async updateUser(data: Partial<User>): Promise<User> {
-    const response = await api.put<User>('/users', data)
+  async updateUser(userId: string, data: Partial<User>): Promise<User> {
+    const response = await api.put<User>(`/users/${userId}`, data)
     return response.data
   },
 

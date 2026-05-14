@@ -5,19 +5,23 @@ import { useAuthStore } from '@/stores/authStore'
 import type { User } from '@/types/auth'
 
 export function useUser() {
+  const userId = useAuthStore((state) => state.user?.id)
+
   return useQuery({
     queryKey: ['user'],
-    queryFn: () => userService.getUser(),
+    queryFn: () => userService.getUser(userId!),
     staleTime: 1000 * 60 * 5, // 5 minutos
+    enabled: !!userId,
   })
 }
 
 export function useUpdateUser() {
   const qc = useQueryClient()
   const setUser = useAuthStore((state) => state.setUser)
+  const userId = useAuthStore((state) => state.user?.id)
 
   return useMutation({
-    mutationFn: (data: Partial<User>) => userService.updateUser(data),
+    mutationFn: (data: Partial<User>) => userService.updateUser(userId!, data),
     onSuccess: (data) => {
       qc.invalidateQueries({ queryKey: ['user'] })
       setUser(data)
