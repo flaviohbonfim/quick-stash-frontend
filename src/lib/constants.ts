@@ -1,4 +1,6 @@
 export const API_BASE_URL = (import.meta as any).env.VITE_API_URL || 'http://localhost:8000'
+export const APP_NAME = 'Quick Stash'
+export const ITEMS_PER_PAGE = 20
 
 export const CATEGORIES = {
   EXPENSE: [

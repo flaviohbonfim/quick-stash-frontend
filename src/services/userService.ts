@@ -1,5 +1,5 @@
 import api from '@/lib/api'
-import type { User } from '@/types/transactions'
+import type { User } from '@/types/auth'
 
 export const userService = {
   async getUser(): Promise<User> {

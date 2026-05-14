@@ -1,8 +1,4 @@
 export type {
-  User,
-  LoginRequest,
-  RegisterRequest,
-  TokenResponse,
   PaymentMethod,
   Transaction,
   BalanceResponse,
@@ -10,14 +6,9 @@ export type {
   TransactionType,
 } from './transactions'
 
-export interface AuthState {
-  user: import('./transactions').User | null
-  accessToken: string | null
-  refreshToken: string | null
-  isAuthenticated: boolean
-}
-
-export interface ThemeState {
-  theme: 'light' | 'dark'
-  toggleTheme: () => void
-}
+export type {
+  User,
+  LoginRequest,
+  RegisterRequest,
+  TokenResponse,
+} from './auth'
