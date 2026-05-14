@@ -10,14 +10,14 @@ import {
   SidebarMenuButton,
   useSidebar,
   SidebarInset,
-  SidebarTrigger,
 } from '@/components/ui/sidebar'
 import { useAuthStore } from '@/stores/authStore'
 import { useTheme } from '@/hooks/useTheme'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { LayoutDashboard, CreditCard, Wallet, Settings, LogOut, Moon, Sun } from 'lucide-react'
+import { LayoutDashboard, CreditCard, Wallet, Settings, LogOut } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import { Header } from './Header'
 
 const navItems = [
   { label: 'Dashboard', icon: LayoutDashboard, path: '/' },
@@ -30,7 +30,7 @@ function SidebarNav() {
   const navigate = useNavigate()
   const location = useLocation()
   const { state } = useSidebar()
-  const logout = useAuthStore(s => s.logout)
+  const logout = useAuthStore((s) => s.logout)
   const { theme, toggleTheme } = useTheme()
 
   const handleLogout = () => {
@@ -48,7 +48,7 @@ function SidebarNav() {
 
       <SidebarContent>
         <SidebarMenu>
-          {navItems.map(item => (
+          {navItems.map((item) => (
             <SidebarMenuItem key={item.path}>
               <SidebarMenuButton
                 isActive={location.pathname === item.path}
@@ -77,7 +77,43 @@ function SidebarNav() {
             className="flex-1 transition-colors duration-150 hover:bg-accent hover:text-accent-foreground"
             title={theme === 'dark' ? 'Modo claro' : 'Modo escuro'}
           >
-            {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            {theme === 'dark' ? (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="12" cy="12" r="4" />
+                <path d="M12 2v2" />
+                <path d="M12 20v2" />
+                <path d="m4.93 4.93 1.41 1.41" />
+                <path d="m17.66 17.66 1.41 1.41" />
+                <path d="M2 12h2" />
+                <path d="M20 12h2" />
+                <path d="m17.66 6.34-1.41 1.41" />
+                <path d="m4.93 19.07 1.41-1.41" />
+              </svg>
+            ) : (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+              </svg>
+            )}
           </Button>
           <Button
             variant="ghost"
@@ -101,9 +137,7 @@ export function AppLayout() {
         <SidebarNav />
       </Sidebar>
       <SidebarInset>
-        <div className="flex items-center gap-2 border-b px-4 py-2">
-          <SidebarTrigger />
-        </div>
+        <Header />
         <main className="flex-1 overflow-auto p-4 md:p-6">
           <div className="mx-auto max-w-7xl">
             <Outlet />

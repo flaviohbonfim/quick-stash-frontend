@@ -101,8 +101,8 @@ export function Dashboard() {
       <TrendChart data={trendChartData} />
 
       {/* Account Cards */}
-      {balanceData?.data?.accounts && (
-        <AccountCards accounts={balanceData.data.accounts} />
+      {balanceData?.accounts && balanceData.accounts.length > 0 && (
+        <AccountCards accounts={balanceData.accounts} />
       )}
 
       {/* Recent Transactions */}

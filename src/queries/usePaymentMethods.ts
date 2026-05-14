@@ -1,7 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { paymentMethodService } from '@/services/paymentMethodService'
-import type { PaymentMethod } from '@/types/transactions'
 
 export function usePaymentMethods() {
   return useQuery({

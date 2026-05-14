@@ -37,38 +37,42 @@ export function TransactionList() {
   const totalPages = Math.ceil(total / limit)
 
   const handleCreate = (formData: any) => {
-    createMutation.mutate({
-      description: formData.description,
-      amount: formData.amount,
-      date: formData.date.toISOString().split('T')[0],
-      type: formData.type,
-      category: formData.category,
-      payment_method_id: formData.payment_method_id,
-      onSuccess: () => setFormOpen(false),
-    })
+    createMutation.mutate(
+      {
+        description: formData.description,
+        amount: formData.amount,
+        date: formData.date.toISOString().split('T')[0],
+        type: formData.type,
+        category: formData.category,
+        payment_method_id: formData.payment_method_id,
+      },
+      { onSuccess: () => setFormOpen(false) }
+    )
   }
 
   const handleUpdate = (formData: any) => {
     if (!editingTransaction) return
-    updateMutation.mutate({
-      id: editingTransaction.id,
-      description: formData.description,
-      amount: formData.amount,
-      date: formData.date.toISOString().split('T')[0],
-      type: formData.type,
-      category: formData.category,
-      payment_method_id: formData.payment_method_id,
-      onSuccess: () => {
-        setFormOpen(false)
-        setEditingTransaction(null)
+    updateMutation.mutate(
+      {
+        id: editingTransaction.id,
+        description: formData.description,
+        amount: formData.amount,
+        date: formData.date.toISOString().split('T')[0],
+        type: formData.type,
+        category: formData.category,
+        payment_method_id: formData.payment_method_id,
       },
-    })
+      {
+        onSuccess: () => {
+          setFormOpen(false)
+          setEditingTransaction(null)
+        },
+      }
+    )
   }
 
   const handleDelete = (id: string) => {
-    deleteMutation.mutate(id, {
-      onSuccess: () => setDeleteId(null),
-    })
+    deleteMutation.mutate(id, { onSuccess: () => setDeleteId(null) })
   }
 
   const handleEdit = (transaction: Transaction) => {

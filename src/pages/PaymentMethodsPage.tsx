@@ -29,7 +29,7 @@ export default function PaymentMethodsPage() {
   const createMutation = useCreatePaymentMethod()
   const deleteMutation = useDeletePaymentMethod()
 
-  const paymentMethods = Array.isArray(data) ? data : (data?.data || [])
+  const paymentMethods = Array.isArray(data) ? data : (data || [])
 
   const [formOpen, setFormOpen] = useState(false)
   const [deleteId, setDeleteId] = useState<string | null>(null)
