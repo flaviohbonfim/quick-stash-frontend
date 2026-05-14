@@ -39,7 +39,7 @@ export function Header() {
   return (
     <header className="flex h-14 items-center border-b bg-card px-4">
       {/* Desktop sidebar toggle */}
-      <SidebarTrigger />
+      <SidebarTrigger className="hidden md:block" />
 
       {/* Mobile hamburger */}
       <Button
