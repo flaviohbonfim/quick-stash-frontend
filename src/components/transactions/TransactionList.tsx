@@ -7,7 +7,6 @@ import { TransactionFilters, type TransactionFilters as FiltersType } from './Tr
 import { TransactionTable } from './TransactionTable'
 import { TransactionForm } from './TransactionForm'
 import { EmptyState } from '@/components/common/EmptyState'
-import { toast } from 'sonner'
 import type { Transaction } from '@/types/transactions'
 
 export function TransactionList() {
@@ -27,7 +26,7 @@ export function TransactionList() {
   })
 
   const { data: paymentMethodsData } = usePaymentMethods()
-  const paymentMethods = paymentMethodsData?.data || []
+  const paymentMethods = paymentMethodsData || []
 
   const createMutation = useCreateTransaction()
   const updateMutation = useUpdateTransaction()
@@ -37,54 +36,39 @@ export function TransactionList() {
   const total = typeof data?.total === 'number' ? data.total : 0
   const totalPages = Math.ceil(total / limit)
 
-  const handleCreate = async (formData: any) => {
-    try {
-      await createMutation.mutateAsync({
-        description: formData.description,
-        amount: formData.amount,
-        date: formData.date.toISOString().split('T')[0],
-        type: formData.type,
-        category: formData.category,
-        payment_method_id: formData.payment_method_id,
-      })
-      toast.success('Transação criada com sucesso!')
-      setFormOpen(false)
-    } catch (error: unknown) {
-      const axiosError = error as { response?: { data?: { detail?: string } } }
-      toast.error(axiosError.response?.data?.detail || 'Erro ao criar transação')
-    }
+  const handleCreate = (formData: any) => {
+    createMutation.mutate({
+      description: formData.description,
+      amount: formData.amount,
+      date: formData.date.toISOString().split('T')[0],
+      type: formData.type,
+      category: formData.category,
+      payment_method_id: formData.payment_method_id,
+      onSuccess: () => setFormOpen(false),
+    })
   }
 
-  const handleUpdate = async (formData: any) => {
+  const handleUpdate = (formData: any) => {
     if (!editingTransaction) return
-    try {
-      await updateMutation.mutateAsync({
-        id: editingTransaction.id,
-        description: formData.description,
-        amount: formData.amount,
-        date: formData.date.toISOString().split('T')[0],
-        type: formData.type,
-        category: formData.category,
-        payment_method_id: formData.payment_method_id,
-      })
-      toast.success('Transação atualizada com sucesso!')
-      setFormOpen(false)
-      setEditingTransaction(null)
-    } catch (error: unknown) {
-      const axiosError = error as { response?: { data?: { detail?: string } } }
-      toast.error(axiosError.response?.data?.detail || 'Erro ao atualizar transação')
-    }
+    updateMutation.mutate({
+      id: editingTransaction.id,
+      description: formData.description,
+      amount: formData.amount,
+      date: formData.date.toISOString().split('T')[0],
+      type: formData.type,
+      category: formData.category,
+      payment_method_id: formData.payment_method_id,
+      onSuccess: () => {
+        setFormOpen(false)
+        setEditingTransaction(null)
+      },
+    })
   }
 
-  const handleDelete = async (id: string) => {
-    try {
-      await deleteMutation.mutateAsync(id)
-      toast.success('Transação excluída com sucesso!')
-      setDeleteId(null)
-    } catch (error: unknown) {
-      const axiosError = error as { response?: { data?: { detail?: string } } }
-      toast.error(axiosError.response?.data?.detail || 'Erro ao excluir transação')
-    }
+  const handleDelete = (id: string) => {
+    deleteMutation.mutate(id, {
+      onSuccess: () => setDeleteId(null),
+    })
   }
 
   const handleEdit = (transaction: Transaction) => {

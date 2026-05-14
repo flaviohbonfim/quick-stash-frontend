@@ -1,14 +1,11 @@
-import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { authService } from '@/services/authService'
-import { useAuthStore } from '@/stores/authStore'
+import { useLogin } from '@/queries/useAuth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { toast } from 'sonner'
 
 const loginSchema = z.object({
   email: z.string().email('Email inválido'),
@@ -18,9 +15,7 @@ const loginSchema = z.object({
 type LoginFormData = z.infer<typeof loginSchema>
 
 export default function LoginPage() {
-  const navigate = useNavigate()
-  const setTokens = useAuthStore(s => s.setTokens)
-  const [isLoading, setIsLoading] = useState(false)
+  const loginMutation = useLogin()
 
   const {
     register,
@@ -30,19 +25,8 @@ export default function LoginPage() {
     resolver: zodResolver(loginSchema),
   })
 
-  const onSubmit = async (data: LoginFormData) => {
-    try {
-      setIsLoading(true)
-      const response = await authService.login(data)
-      setTokens(response.access_token, response.refresh_token)
-      toast.success('Login realizado com sucesso!')
-      navigate('/')
-    } catch (error: unknown) {
-      const axiosError = error as { response?: { data?: { detail?: string } } }
-      toast.error(axiosError.response?.data?.detail || 'Erro ao fazer login')
-    } finally {
-      setIsLoading(false)
-    }
+  const onSubmit = (data: LoginFormData) => {
+    loginMutation.mutate(data)
   }
 
   return (
@@ -82,8 +66,8 @@ export default function LoginPage() {
                 <p className="text-sm text-destructive">{errors.password.message}</p>
               )}
             </div>
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? 'Entrando...' : 'Entrar'}
+            <Button type="submit" className="w-full" disabled={loginMutation.isPending}>
+              {loginMutation.isPending ? 'Entrando...' : 'Entrar'}
             </Button>
           </form>
           <div className="mt-4 text-center text-sm">

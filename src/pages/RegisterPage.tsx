@@ -1,14 +1,11 @@
-import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { authService } from '@/services/authService'
-import { useAuthStore } from '@/stores/authStore'
+import { useRegister } from '@/queries/useAuth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { toast } from 'sonner'
 
 const registerSchema = z.object({
   name: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres'),
@@ -23,9 +20,7 @@ const registerSchema = z.object({
 type RegisterFormData = z.infer<typeof registerSchema>
 
 export default function RegisterPage() {
-  const navigate = useNavigate()
-  const setTokens = useAuthStore(s => s.setTokens)
-  const [isLoading, setIsLoading] = useState(false)
+  const registerMutation = useRegister()
 
   const {
     register,
@@ -35,23 +30,12 @@ export default function RegisterPage() {
     resolver: zodResolver(registerSchema),
   })
 
-  const onSubmit = async (data: RegisterFormData) => {
-    try {
-      setIsLoading(true)
-      const response = await authService.register({
-        name: data.name,
-        email: data.email,
-        password: data.password,
-      })
-      setTokens(response.access_token, response.refresh_token)
-      toast.success('Conta criada com sucesso!')
-      navigate('/')
-    } catch (error: unknown) {
-      const axiosError = error as { response?: { data?: { detail?: string } } }
-      toast.error(axiosError.response?.data?.detail || 'Erro ao criar conta')
-    } finally {
-      setIsLoading(false)
-    }
+  const onSubmit = (data: RegisterFormData) => {
+    registerMutation.mutate({
+      name: data.name,
+      email: data.email,
+      password: data.password,
+    })
   }
 
   return (
@@ -119,8 +103,8 @@ export default function RegisterPage() {
                 <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>
               )}
             </div>
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? 'Criando...' : 'Criar conta'}
+            <Button type="submit" className="w-full" disabled={registerMutation.isPending}>
+              {registerMutation.isPending ? 'Criando...' : 'Criar conta'}
             </Button>
           </form>
           <div className="mt-4 text-center text-sm">

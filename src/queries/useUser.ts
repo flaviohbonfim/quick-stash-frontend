@@ -1,19 +1,32 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import api from '@/lib/api'
+import { toast } from 'sonner'
+import { userService } from '@/services/userService'
+import { useAuthStore } from '@/stores/authStore'
 import type { User } from '@/types/auth'
 
 export function useUser() {
   return useQuery({
     queryKey: ['user'],
-    queryFn: () => api.get('/users').then(r => r.data),
+    queryFn: () => userService.getUser(),
+    staleTime: 1000 * 60 * 5, // 5 minutos
   })
 }
 
 export function useUpdateUser() {
   const qc = useQueryClient()
+  const setUser = useAuthStore((state) => state.setUser)
+
   return useMutation({
-    mutationFn: (data: Partial<User>) =>
-      api.put('/users', data).then(r => r.data),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['user'] }),
+    mutationFn: (data: Partial<User>) => userService.updateUser(data),
+    onSuccess: (data) => {
+      qc.invalidateQueries({ queryKey: ['user'] })
+      setUser(data)
+      toast.success('Perfil atualizado com sucesso!')
+    },
+    onError: (error: unknown) => {
+      const axiosError = error as { response?: { data?: { detail?: string } } }
+      const message = axiosError.response?.data?.detail || 'Erro ao atualizar perfil'
+      toast.error(message)
+    },
   })
 }

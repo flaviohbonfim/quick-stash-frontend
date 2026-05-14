@@ -1,8 +1,8 @@
 import api from '@/lib/api'
-import type { Transaction, BalanceResponse } from '@/types/transactions'
+import type { Transaction, BalanceResponse, TransactionFilters } from '@/types/transactions'
 
 export const transactionService = {
-  async getTransactions(params?: Record<string, string | number>): Promise<{
+  async getTransactions(params?: TransactionFilters): Promise<{
     data: Transaction[]
     total: number
     limit: number

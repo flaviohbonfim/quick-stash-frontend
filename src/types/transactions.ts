@@ -29,3 +29,13 @@ export interface BalanceResponse {
     balance: number
   }>
 }
+
+export interface TransactionFilters {
+  type?: 'INCOME' | 'EXPENSE'
+  category?: string
+  payment_method_id?: string
+  start_date?: string
+  end_date?: string
+  limit?: number
+  offset?: number
+}

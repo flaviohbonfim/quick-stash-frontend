@@ -1,26 +1,47 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import api from '@/lib/api'
+import { toast } from 'sonner'
+import { paymentMethodService } from '@/services/paymentMethodService'
+import type { PaymentMethod } from '@/types/transactions'
 
 export function usePaymentMethods() {
   return useQuery({
     queryKey: ['payment-methods'],
-    queryFn: () => api.get('/payment-methods').then(r => r.data),
+    queryFn: () => paymentMethodService.getPaymentMethods(),
+    staleTime: 1000 * 60, // 1 minuto
   })
 }
 
 export function useCreatePaymentMethod() {
   const qc = useQueryClient()
+
   return useMutation({
     mutationFn: (data: { name: string; type: 'PIX' | 'CREDIT_CARD' }) =>
-      api.post('/payment-methods', data).then(r => r.data),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['payment-methods'] }),
+      paymentMethodService.createPaymentMethod(data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['payment-methods'] })
+      toast.success('Conta criada com sucesso!')
+    },
+    onError: (error: unknown) => {
+      const axiosError = error as { response?: { data?: { detail?: string } } }
+      const message = axiosError.response?.data?.detail || 'Erro ao criar conta'
+      toast.error(message)
+    },
   })
 }
 
 export function useDeletePaymentMethod() {
   const qc = useQueryClient()
+
   return useMutation({
-    mutationFn: (id: string) => api.delete(`/payment-methods/${id}`),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['payment-methods'] }),
+    mutationFn: (id: string) => paymentMethodService.deletePaymentMethod(id),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['payment-methods'] })
+      toast.success('Conta removida com sucesso!')
+    },
+    onError: (error: unknown) => {
+      const axiosError = error as { response?: { data?: { detail?: string } } }
+      const message = axiosError.response?.data?.detail || 'Erro ao remover conta'
+      toast.error(message)
+    },
   })
 }

@@ -20,7 +20,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { toast } from 'sonner'
 import { CurrencyFormat } from '@/components/common/CurrencyFormat'
 import { EmptyState } from '@/components/common/EmptyState'
 import type { PaymentMethod } from '@/types/transactions'
@@ -37,32 +36,26 @@ export default function PaymentMethodsPage() {
   const [newName, setNewName] = useState('')
   const [newType, setNewType] = useState<'PIX' | 'CREDIT_CARD'>('PIX')
 
-  const handleCreate = async () => {
+  const handleCreate = () => {
     if (!newName.trim()) {
-      toast.error('Nome é obrigatório')
       return
     }
-    try {
-      await createMutation.mutateAsync({ name: newName, type: newType })
-      toast.success('Conta criada com sucesso!')
-      setFormOpen(false)
-      setNewName('')
-      setNewType('PIX')
-    } catch (error: unknown) {
-      const axiosError = error as { response?: { data?: { detail?: string } } }
-      toast.error(axiosError.response?.data?.detail || 'Erro ao criar conta')
-    }
+    createMutation.mutate(
+      { name: newName, type: newType },
+      {
+        onSuccess: () => {
+          setFormOpen(false)
+          setNewName('')
+          setNewType('PIX')
+        },
+      }
+    )
   }
 
-  const handleDelete = async (id: string) => {
-    try {
-      await deleteMutation.mutateAsync(id)
-      toast.success('Conta excluída com sucesso!')
-      setDeleteId(null)
-    } catch (error: unknown) {
-      const axiosError = error as { response?: { data?: { detail?: string } } }
-      toast.error(axiosError.response?.data?.detail || 'Erro ao excluir conta')
-    }
+  const handleDelete = (id: string) => {
+    deleteMutation.mutate(id, {
+      onSuccess: () => setDeleteId(null),
+    })
   }
 
   return (
