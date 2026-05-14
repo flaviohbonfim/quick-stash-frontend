@@ -30,3 +30,18 @@ export function useUpdateUser() {
     },
   })
 }
+
+export function useChangePassword() {
+  return useMutation({
+    mutationFn: (data: { old_password: string; new_password: string }) =>
+      userService.changePassword(data),
+    onSuccess: () => {
+      toast.success('Senha alterada com sucesso!')
+    },
+    onError: (error: unknown) => {
+      const axiosError = error as { response?: { data?: { detail?: string } } }
+      const message = axiosError.response?.data?.detail || 'Erro ao alterar senha'
+      toast.error(message)
+    },
+  })
+}

@@ -1,6 +1,11 @@
 import api from '@/lib/api'
 import type { User } from '@/types/auth'
 
+export interface ChangePasswordRequest {
+  old_password: string
+  new_password: string
+}
+
 export const userService = {
   async getUser(): Promise<User> {
     const response = await api.get<User>('/users')
@@ -14,6 +19,11 @@ export const userService = {
 
   async updateUser(data: Partial<User>): Promise<User> {
     const response = await api.put<User>('/users', data)
+    return response.data
+  },
+
+  async changePassword(data: ChangePasswordRequest): Promise<void> {
+    const response = await api.post('/users/change-password', data)
     return response.data
   },
 }
