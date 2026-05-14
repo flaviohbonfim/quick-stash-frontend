@@ -92,7 +92,6 @@ api.interceptors.response.use(
         // Refresh falhou — logout
         processQueue(refreshError, null)
         useAuthStore.getState().logout()
-        window.location.href = '/login'
         return Promise.reject(refreshError)
       } finally {
         isRefreshing = false

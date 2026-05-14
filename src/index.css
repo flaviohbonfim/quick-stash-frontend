@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@variant dark (&:where(.dark, .dark *));
+
 @theme {
   --color-background: oklch(1 0 0);
   --color-foreground: oklch(0.145 0 0);
@@ -23,7 +25,7 @@
   --color-danger: oklch(0.577 0.254 25.331);
   --color-danger-foreground: oklch(0.985 0 0);
   --color-warning: oklch(0.765 0.184 65.697);
-  --color-warning-foreground: oklch(0.985 0 0);
+  --color-warning-foreground: oklch(0.145 0 0);
   --color-chart-1: oklch(0.646 0.222 41.116);
   --color-chart-2: oklch(0.6 0.118 184.704);
   --color-chart-3: oklch(0.398 0.07 227.392);
@@ -35,8 +37,7 @@
   --radius-xl: 0.75rem;
 }
 
-/* Dark mode */
-@theme dark {
+.dark {
   --color-background: oklch(0.145 0 0);
   --color-foreground: oklch(0.985 0 0);
   --color-card: oklch(0.205 0 0);

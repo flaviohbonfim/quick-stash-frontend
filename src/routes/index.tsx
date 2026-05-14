@@ -1,6 +1,7 @@
 import { createBrowserRouter } from 'react-router-dom'
 import { lazy, Suspense } from 'react'
 import { LoadingSpinner } from '@/components/common/LoadingSpinner'
+import { AppLayout } from '@/components/layout/AppLayout'
 import { ProtectedRoute } from './ProtectedRoute'
 
 const LoginPage = lazy(() => import('@/pages/LoginPage'))
@@ -32,20 +33,25 @@ export const router = createBrowserRouter([
     element: <ProtectedRoute />,
     children: [
       {
-        index: true,
-        element: <DashboardPage />,
-      },
-      {
-        path: 'transactions',
-        element: <TransactionsPage />,
-      },
-      {
-        path: 'payment-methods',
-        element: <PaymentMethodsPage />,
-      },
-      {
-        path: 'settings',
-        element: <SettingsPage />,
+        element: <AppLayout />,
+        children: [
+          {
+            index: true,
+            element: <DashboardPage />,
+          },
+          {
+            path: 'transactions',
+            element: <TransactionsPage />,
+          },
+          {
+            path: 'payment-methods',
+            element: <PaymentMethodsPage />,
+          },
+          {
+            path: 'settings',
+            element: <SettingsPage />,
+          },
+        ],
       },
     ],
   },

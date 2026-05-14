@@ -6,29 +6,38 @@ interface ThemeState {
   toggleTheme: () => void
 }
 
+function getInitialTheme(): 'dark' | 'light' {
+  if (typeof window !== 'undefined') {
+    const stored = localStorage.getItem('theme')
+    if (stored === 'dark' || stored === 'light') return stored
+    if (window.matchMedia('(prefers-color-scheme: dark)').matches) return 'dark'
+  }
+  return 'light'
+}
+
 export const useThemeStore = create<ThemeState>()((set, get) => ({
-  theme:
-    typeof window !== 'undefined' &&
-    document.documentElement.classList.contains('dark')
-      ? 'dark'
-      : 'light',
+  theme: getInitialTheme(),
 
   setTheme: (theme) => {
-    document.documentElement.classList.toggle('dark', theme === 'dark')
+    const root = document.documentElement
+    if (theme === 'dark') {
+      root.classList.add('dark')
+    } else {
+      root.classList.remove('dark')
+    }
+    localStorage.setItem('theme', theme)
     set({ theme })
   },
 
   toggleTheme: () => {
     const newTheme = get().theme === 'dark' ? 'light' : 'dark'
-    document.documentElement.classList.toggle('dark', newTheme === 'dark')
+    const root = document.documentElement
+    if (newTheme === 'dark') {
+      root.classList.add('dark')
+    } else {
+      root.classList.remove('dark')
+    }
+    localStorage.setItem('theme', newTheme)
     set({ theme: newTheme })
   },
 }))
-
-// Initialize theme on app start — detect system preference
-if (typeof window !== 'undefined') {
-  const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-  if (systemPrefersDark) {
-    document.documentElement.classList.add('dark')
-  }
-}
