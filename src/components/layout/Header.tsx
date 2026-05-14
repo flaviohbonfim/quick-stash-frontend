@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { useNavigate } from 'react-router-dom'
-import { useSidebar } from '@/components/ui/sidebar'
+import { useSidebar, SidebarTrigger } from '@/components/ui/sidebar'
 
 export function Header() {
   const navigate = useNavigate()
@@ -38,6 +38,9 @@ export function Header() {
 
   return (
     <header className="flex h-14 items-center border-b bg-card px-4">
+      {/* Desktop sidebar toggle */}
+      <SidebarTrigger />
+
       {/* Mobile hamburger */}
       <Button
         variant="ghost"
