@@ -66,9 +66,9 @@ export function TrendChart({ data }: TrendChartProps) {
                 <Line
                   type="monotone"
                   dataKey="balance"
-                  stroke="hsl(var(--primary))"
+                  stroke="#3b82f6"
                   strokeWidth={2}
-                  dot={{ fill: 'hsl(var(--primary))' }}
+                  dot={{ fill: '#3b82f6' }}
                   activeDot={{ r: 6 }}
                 />
               </LineChart>

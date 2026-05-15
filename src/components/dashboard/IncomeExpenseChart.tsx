@@ -66,13 +66,13 @@ export function IncomeExpenseChart({ data }: IncomeExpenseChartProps) {
                 />
                 <Bar
                   dataKey="income"
-                  fill="hsl(var(--success))"
+                  fill="#10b981"
                   radius={[4, 4, 0, 0]}
                   name="Receita"
                 />
                 <Bar
                   dataKey="expense"
-                  fill="hsl(var(--danger))"
+                  fill="#ef4444"
                   radius={[4, 4, 0, 0]}
                   name="Despesa"
                 />

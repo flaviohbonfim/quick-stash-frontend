@@ -17,16 +17,16 @@ interface CategoryData {
 }
 
 const CATEGORY_COLORS = [
-  'hsl(var(--success))',
-  'hsl(var(--danger))',
-  'hsl(var(--primary))',
-  'hsl(217 91% 60%)',
-  'hsl(280 70% 55%)',
-  'hsl(35 90% 55%)',
-  'hsl(170 70% 45%)',
-  'hsl(25 95% 55%)',
-  'hsl(300 70% 55%)',
-  'hsl(190 80% 50%)',
+  '#10b981', // emerald - success
+  '#ef4444', // red - danger
+  '#3b82f6', // blue - primary
+  '#8b5cf6', // violet
+  '#f59e0b', // amber
+  '#06b6d4', // cyan
+  '#ec4899', // pink
+  '#84cc16', // lime
+  '#f97316', // orange
+  '#6366f1', // indigo
 ]
 
 interface CategoryChartProps {
@@ -65,7 +65,6 @@ export function CategoryChart({ data, title = 'Despesas por Categoria' }: Catego
                   labelLine={false}
                   label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
                   outerRadius={80}
-                  fill="#8884d8"
                   dataKey="value"
                 >
                   {data.map((_entry, index) => (
