@@ -20,11 +20,18 @@ import {
 import { CurrencyFormat } from '@/components/common/CurrencyFormat'
 import type { Transaction } from '@/types/transactions'
 
+interface PaymentMethod {
+  id: string
+  name: string
+  type: string
+}
+
 interface TransactionTableProps {
   transactions: Transaction[]
   loading: boolean
   onEdit: (transaction: Transaction) => void
   onDelete: (id: string) => void
+  paymentMethods?: PaymentMethod[]
 }
 
 export function TransactionTable({
@@ -32,10 +39,16 @@ export function TransactionTable({
   loading,
   onEdit,
   onDelete,
+  paymentMethods = [],
 }: TransactionTableProps) {
+  const getPaymentMethodName = (id: string) => {
+    const pm = paymentMethods.find(p => p.id === id)
+    return pm ? pm.name : id.slice(0, 8)
+  }
+
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-8">
+      <div className="flex items-center justify-center py-8" role="status" aria-label="Carregando transações">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
       </div>
     )
@@ -50,7 +63,7 @@ export function TransactionTable({
   }
 
   return (
-    <Table>
+    <Table aria-label="Lista de transações">
       <TableHeader>
         <TableRow>
           <TableHead>Data</TableHead>
@@ -58,7 +71,7 @@ export function TransactionTable({
           <TableHead>Categoria</TableHead>
           <TableHead className="hidden md:table-cell">Conta</TableHead>
           <TableHead className="text-right">Valor</TableHead>
-          <TableHead className="w-10" />
+          <TableHead className="w-10 sr-only">Ações</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -71,8 +84,10 @@ export function TransactionTable({
             <TableCell>
               <Badge variant="outline">{transaction.category}</Badge>
             </TableCell>
-            <TableCell className="hidden md:table-cell text-muted-foreground">
-              {transaction.payment_method_id}
+            <TableCell className="hidden md:table-cell">
+              <span className="text-muted-foreground">
+                {getPaymentMethodName(transaction.payment_method_id)}
+              </span>
             </TableCell>
             <TableCell className="text-right font-medium">
               <span className={transaction.type === 'INCOME' ? 'text-success' : 'text-destructive'}>
@@ -82,13 +97,16 @@ export function TransactionTable({
             </TableCell>
             <TableCell>
               <DropdownMenu>
-                <DropdownMenuTrigger>
-                  <button
-                    type="button"
-                    className="inline-flex shrink-0 items-center justify-center rounded-lg border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-all outline-none select-none h-8 w-8 hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                    aria-label={`Ações para ${transaction.description}`}
                   >
                     <MoreHorizontal className="h-4 w-4" />
-                  </button>
+                    <span className="sr-only">Ações</span>
+                  </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem onClick={() => onEdit(transaction)}>
@@ -96,7 +114,7 @@ export function TransactionTable({
                     Editar
                   </DropdownMenuItem>
                   <DropdownMenuItem
-                    className="text-destructive"
+                    className="text-destructive focus:text-destructive"
                     onClick={() => onDelete(transaction.id)}
                   >
                     <Trash2 className="mr-2 h-4 w-4" />

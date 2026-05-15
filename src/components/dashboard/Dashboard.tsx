@@ -7,7 +7,31 @@ import { TrendChart } from './TrendChart'
 import { AccountCards } from './AccountCards'
 import { RecentTransactions } from './RecentTransactions'
 import { Skeleton } from '@/components/ui/skeleton'
+import { motion } from 'framer-motion'
 import type { Transaction } from '@/types/transactions'
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+      delayChildren: 0.1,
+    },
+  },
+}
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 16 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.4,
+      ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
+    },
+  },
+}
 
 export function Dashboard() {
   const { data: balanceData, isLoading: balanceLoading } = useBalance()
@@ -81,32 +105,49 @@ export function Dashboard() {
   const totalExpense = transactions.reduce<number>((sum, t) => t.type === 'EXPENSE' ? sum + t.amount : sum, 0)
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-3xl font-bold">Dashboard</h1>
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="space-y-6"
+    >
+      <motion.h1 variants={itemVariants} className="text-3xl font-bold">
+        Dashboard
+      </motion.h1>
 
       {/* Summary Cards */}
-      <SummaryCards
-        totalIncome={totalIncome}
-        totalExpense={totalExpense}
-        totalBalance={totalBalance}
-      />
+      <motion.div variants={itemVariants}>
+        <SummaryCards
+          totalIncome={totalIncome}
+          totalExpense={totalExpense}
+          totalBalance={totalBalance}
+        />
+      </motion.div>
 
       {/* Charts Row */}
-      <div className="grid gap-6 md:grid-cols-2">
-        <IncomeExpenseChart data={incomeExpenseChartData} />
-        <CategoryChart data={categoryChartData} />
-      </div>
+      <motion.div variants={itemVariants}>
+        <div className="grid gap-6 md:grid-cols-2">
+          <IncomeExpenseChart data={incomeExpenseChartData} />
+          <CategoryChart data={categoryChartData} />
+        </div>
+      </motion.div>
 
       {/* Trend Chart */}
-      <TrendChart data={trendChartData} />
+      <motion.div variants={itemVariants}>
+        <TrendChart data={trendChartData} />
+      </motion.div>
 
       {/* Account Cards */}
       {balanceData?.accounts && balanceData.accounts.length > 0 && (
-        <AccountCards accounts={balanceData.accounts} />
+        <motion.div variants={itemVariants}>
+          <AccountCards accounts={balanceData.accounts} />
+        </motion.div>
       )}
 
       {/* Recent Transactions */}
-      <RecentTransactions transactions={transactions.slice(0, 5)} />
-    </div>
+      <motion.div variants={itemVariants}>
+        <RecentTransactions transactions={transactions.slice(0, 5)} />
+      </motion.div>
+    </motion.div>
   )
 }

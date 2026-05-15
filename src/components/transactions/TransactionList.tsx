@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Plus } from 'lucide-react'
+import { Plus, Trash2 } from 'lucide-react'
 import { useTransactions, useCreateTransaction, useUpdateTransaction, useDeleteTransaction } from '@/queries/useTransactions'
 import { usePaymentMethods } from '@/queries/usePaymentMethods'
 import { Button } from '@/components/ui/button'
@@ -7,7 +7,16 @@ import { TransactionFilters, type TransactionFilters as FiltersType } from './Tr
 import { TransactionTable } from './TransactionTable'
 import { TransactionForm } from './TransactionForm'
 import { EmptyState } from '@/components/common/EmptyState'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import type { Transaction } from '@/types/transactions'
+import { motion, AnimatePresence } from 'framer-motion'
 
 export function TransactionList() {
   const [filters, setFilters] = useState<FiltersType>({})
@@ -112,6 +121,7 @@ export function TransactionList() {
             loading={isLoading}
             onEdit={handleEdit}
             onDelete={handleDeleteClick}
+            paymentMethods={paymentMethods}
           />
 
           {/* Pagination */}
@@ -164,24 +174,31 @@ export function TransactionList() {
       />
 
       {/* Delete Confirmation */}
-      {deleteId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="w-full max-w-sm rounded-lg bg-card p-6 shadow-lg">
-            <h3 className="text-lg font-semibold">Confirmar exclusão</h3>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Tem certeza que deseja excluir esta transação? Esta ação não pode ser desfeita.
-            </p>
-            <div className="mt-4 flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setDeleteId(null)}>
-                Cancelar
-              </Button>
-              <Button variant="destructive" onClick={() => handleDelete(deleteId)}>
-                Excluir
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+      <AnimatePresence>
+        {deleteId && (
+          <Dialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
+            <DialogContent className="sm:max-w-[400px]">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <Trash2 className="h-5 w-5 text-destructive" />
+                  Confirmar exclusão
+                </DialogTitle>
+                <DialogDescription>
+                  Tem certeza que deseja excluir esta transação? Esta ação não pode ser desfeita.
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter className="gap-2 sm:gap-0">
+                <Button variant="outline" onClick={() => setDeleteId(null)}>
+                  Cancelar
+                </Button>
+                <Button variant="destructive" onClick={() => handleDelete(deleteId)}>
+                  Excluir
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

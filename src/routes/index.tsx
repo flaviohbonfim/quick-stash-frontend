@@ -1,8 +1,10 @@
 import { createBrowserRouter } from 'react-router-dom'
 import { lazy, Suspense } from 'react'
+import { AnimatePresence } from 'framer-motion'
 import { LoadingSpinner } from '@/components/common/LoadingSpinner'
 import { AppLayout } from '@/components/layout/AppLayout'
 import { ProtectedRoute } from './ProtectedRoute'
+import { PageTransition } from '@/components/common/PageTransition'
 
 const LoginPage = lazy(() => import('@/pages/LoginPage'))
 const RegisterPage = lazy(() => import('@/pages/RegisterPage'))
@@ -36,20 +38,29 @@ export const router = createBrowserRouter([
         element: <AppLayout />,
         children: [
           {
-            index: true,
-            element: <DashboardPage />,
-          },
-          {
-            path: 'transactions',
-            element: <TransactionsPage />,
-          },
-          {
-            path: 'payment-methods',
-            element: <PaymentMethodsPage />,
-          },
-          {
-            path: 'settings',
-            element: <SettingsPage />,
+            element: (
+              <AnimatePresence mode="wait">
+                <PageTransition />
+              </AnimatePresence>
+            ),
+            children: [
+              {
+                index: true,
+                element: <DashboardPage />,
+              },
+              {
+                path: 'transactions',
+                element: <TransactionsPage />,
+              },
+              {
+                path: 'payment-methods',
+                element: <PaymentMethodsPage />,
+              },
+              {
+                path: 'settings',
+                element: <SettingsPage />,
+              },
+            ],
           },
         ],
       },

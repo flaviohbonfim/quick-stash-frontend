@@ -22,7 +22,23 @@ import {
 } from '@/components/ui/select'
 import { CurrencyFormat } from '@/components/common/CurrencyFormat'
 import { EmptyState } from '@/components/common/EmptyState'
+import { motion, AnimatePresence } from 'framer-motion'
 import type { PaymentMethod } from '@/types/transactions'
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 20, scale: 0.97 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      delay: i * 0.06,
+      duration: 0.35,
+      ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
+    },
+  }),
+  exit: { opacity: 0, scale: 0.95, transition: { duration: 0.15 } },
+}
 
 export default function PaymentMethodsPage() {
   const { data } = usePaymentMethods()
@@ -82,8 +98,17 @@ export default function PaymentMethodsPage() {
         />
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {paymentMethods.map((pm: PaymentMethod) => (
-            <Card key={pm.id}>
+          <AnimatePresence>
+            {paymentMethods.map((pm: PaymentMethod, i: number) => (
+              <motion.div
+                key={pm.id}
+                custom={i}
+                variants={cardVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+              >
+                <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">{pm.name}</CardTitle>
                 <Badge variant={pm.type === 'CREDIT_CARD' ? 'destructive' : 'outline'}>
@@ -108,7 +133,9 @@ export default function PaymentMethodsPage() {
                 </Button>
               </CardContent>
             </Card>
-          ))}
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </div>
       )}
 
@@ -158,24 +185,31 @@ export default function PaymentMethodsPage() {
       </Dialog>
 
       {/* Delete Confirmation */}
-      {deleteId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="w-full max-w-sm rounded-lg bg-card p-6 shadow-lg">
-            <h3 className="text-lg font-semibold">Confirmar exclusão</h3>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Tem certeza que deseja excluir esta conta? Esta ação não pode ser desfeita.
-            </p>
-            <div className="mt-4 flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setDeleteId(null)}>
-                Cancelar
-              </Button>
-              <Button variant="destructive" onClick={() => handleDelete(deleteId)}>
-                Excluir
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+      <AnimatePresence>
+        {deleteId && (
+          <Dialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
+            <DialogContent className="sm:max-w-[400px]">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <Trash2 className="h-5 w-5 text-destructive" />
+                  Confirmar exclusão
+                </DialogTitle>
+                <DialogDescription>
+                  Tem certeza que deseja excluir esta conta? Esta ação não pode ser desfeita.
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter className="gap-2 sm:gap-0">
+                <Button variant="outline" onClick={() => setDeleteId(null)}>
+                  Cancelar
+                </Button>
+                <Button variant="destructive" onClick={() => handleDelete(deleteId)}>
+                  Excluir
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

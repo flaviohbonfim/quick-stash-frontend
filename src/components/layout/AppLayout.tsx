@@ -16,6 +16,20 @@ import { LayoutDashboard, CreditCard, Wallet, Settings, LogOut } from 'lucide-re
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { Header } from './Header'
+import { motion } from 'framer-motion'
+
+const sidebarItemVariants = {
+  hidden: { opacity: 0, x: -12 },
+  visible: (i: number) => ({
+    opacity: 1,
+    x: 0,
+    transition: {
+      delay: i * 0.05,
+      duration: 0.3,
+      ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
+    },
+  }),
+}
 
 const navItems = [
   { label: 'Dashboard', icon: LayoutDashboard, path: '/' },
@@ -45,38 +59,46 @@ function SidebarNav() {
 
       <SidebarContent>
         <SidebarMenu>
-          {navItems.map((item) => (
+          {navItems.map((item, i) => (
             <SidebarMenuItem key={item.path}>
-              <SidebarMenuButton
-                isActive={location.pathname === item.path}
-                tooltip={item.label}
-                onClick={() => navigate(item.path)}
-                className={cn(
-                  'transition-colors duration-150',
-                  'hover:bg-accent hover:text-accent-foreground',
-                  'data-[active=true]:bg-accent data-[active=true]:text-accent-foreground data-[active=true]:font-medium',
-                )}
-              >
-                <item.icon className="h-4 w-4" />
-                <span>{item.label}</span>
-              </SidebarMenuButton>
+              <motion.div variants={sidebarItemVariants} custom={i}>
+                <SidebarMenuButton
+                  isActive={location.pathname === item.path}
+                  tooltip={item.label}
+                  onClick={() => navigate(item.path)}
+                  className={cn(
+                    'transition-colors duration-150',
+                    'hover:bg-accent hover:text-accent-foreground',
+                    'data-[active=true]:bg-accent data-[active=true]:text-accent-foreground data-[active=true]:font-medium',
+                  )}
+                >
+                  <item.icon className="h-4 w-4" />
+                  <span>{item.label}</span>
+                </SidebarMenuButton>
+              </motion.div>
             </SidebarMenuItem>
           ))}
         </SidebarMenu>
       </SidebarContent>
 
       {/* Bottom — Logout only (theme toggle is in Header) */}
-      <div className="border-t p-2">
+      <motion.div
+        className="border-t p-2"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.3, duration: 0.3 }}
+      >
         <Button
           variant="ghost"
           size="icon"
           onClick={handleLogout}
           className="w-full text-destructive hover:text-destructive transition-colors duration-150 hover:bg-accent"
-          title="Sair"
+          aria-label="Sair da conta"
         >
           <LogOut className="h-4 w-4" />
+          <span className="sr-only">Sair</span>
         </Button>
-      </div>
+      </motion.div>
     </>
   )
 }
