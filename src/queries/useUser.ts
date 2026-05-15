@@ -1,27 +1,34 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
+import { authService } from '@/services/authService'
 import { userService } from '@/services/userService'
 import { useAuthStore } from '@/stores/authStore'
 import type { User } from '@/types/auth'
 
 export function useUser() {
-  const userId = useAuthStore((state) => state.user?.id)
+  const setUser = useAuthStore((state) => state.setUser)
 
   return useQuery({
     queryKey: ['user'],
-    queryFn: () => userService.getUser(userId!),
-    staleTime: 1000 * 60 * 5, // 5 minutos
-    enabled: !!userId,
+    queryFn: () => authService.getCurrentUser(),
+    staleTime: 1000 * 60 * 5,
+    retry: 1,
+    refetchOnMount: 'always',
+    refetchOnWindowFocus: true,
+    onSuccess: (data) => {
+      setUser(data)
+    },
   })
 }
 
 export function useUpdateUser() {
   const qc = useQueryClient()
   const setUser = useAuthStore((state) => state.setUser)
-  const userId = useAuthStore((state) => state.user?.id)
 
   return useMutation({
-    mutationFn: (data: Partial<User>) => userService.updateUser(userId!, data),
+    mutationFn: (data: { id: string } & Partial<User>) => {
+      return userService.updateUser(data.id, { name: data.name, email: data.email })
+    },
     onSuccess: (data) => {
       qc.invalidateQueries({ queryKey: ['user'] })
       setUser(data)

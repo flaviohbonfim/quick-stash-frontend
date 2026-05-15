@@ -22,7 +22,9 @@ export const authService = {
   },
 
   async getCurrentUser(): Promise<User> {
-    const response = await api.get<User>('/users')
-    return response.data
+    const response = await api.get<User[]>('/users')
+    const data = response.data
+    // Backend retorna array — pegar o primeiro usuário como "current user"
+    return data[0] ?? ({} as User)
   },
 }

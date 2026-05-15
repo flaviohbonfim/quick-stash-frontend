@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Loader2, Eye, EyeOff } from 'lucide-react'
 import { useUser, useUpdateUser, useChangePassword } from '@/queries/useUser'
 import { Button } from '@/components/ui/button'
@@ -29,11 +29,18 @@ export default function SettingsPage() {
 /* ─── Profile Section ─── */
 
 function ProfileSection() {
-  const { data: userData, isLoading: userLoading } = useUser()
+  const { data: userData, isLoading: userLoading, status } = useUser()
   const updateMutation = useUpdateUser()
   const [editing, setEditing] = useState(false)
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
+
+  useEffect(() => {
+    if (userData) {
+      setName(userData.name ?? '')
+      setEmail(userData.email ?? '')
+    }
+  }, [userData])
 
   if (userLoading) {
     return (
@@ -57,15 +64,34 @@ function ProfileSection() {
     )
   }
 
-  if (!userData) return null
+  if (status === 'error') {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Perfil</CardTitle>
+          <CardDescription>
+            Atualize suas informações pessoais
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-sm text-destructive">
+            Erro ao carregar dados do perfil. Tente novamente.
+          </p>
+          <Button onClick={() => setName('')}>
+            Tentar novamente
+          </Button>
+        </CardContent>
+      </Card>
+    )
+  }
 
   const isEditing = editing
-  const displayName = isEditing ? name : userData.name
-  const displayEmail = isEditing ? email : userData.email
+  const displayName = isEditing ? name : (userData?.name ?? '')
+  const displayEmail = isEditing ? email : (userData?.email ?? '')
 
   const handleEdit = () => {
-    setName(userData.name)
-    setEmail(userData.email)
+    setName(userData?.name ?? '')
+    setEmail(userData?.email ?? '')
     setEditing(true)
   }
 
@@ -75,7 +101,7 @@ function ProfileSection() {
 
   const handleSave = () => {
     if (!name.trim() || !email.trim()) return
-    updateMutation.mutate({ name: name.trim(), email: email.trim() })
+    updateMutation.mutate({ id: userData.id, name: name.trim(), email: email.trim() })
     setEditing(false)
   }
 
