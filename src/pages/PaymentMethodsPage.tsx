@@ -52,6 +52,9 @@ export default function PaymentMethodsPage() {
   const [newName, setNewName] = useState('')
   const [newType, setNewType] = useState<'PIX' | 'CREDIT_CARD'>('PIX')
 
+  const typeLabel = (value: 'PIX' | 'CREDIT_CARD') =>
+    value === 'CREDIT_CARD' ? 'Cartão de Crédito' : 'PIX'
+
   const handleCreate = () => {
     if (!newName.trim()) {
       return
@@ -164,7 +167,7 @@ export default function PaymentMethodsPage() {
               <label className="text-sm font-medium">Tipo</label>
               <Select value={newType} onValueChange={(v) => setNewType(v as 'PIX' | 'CREDIT_CARD')}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Selecione o tipo" />
+                  <SelectValue>{newType ? typeLabel(newType) : 'Selecione o tipo'}</SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="PIX">PIX</SelectItem>

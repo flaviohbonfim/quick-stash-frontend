@@ -89,6 +89,13 @@ export function TransactionForm({
   const selectedType = watch('type')
   const activeCategories = selectedType ? CATEGORIES[selectedType as keyof typeof CATEGORIES] : []
 
+  const typeLabel = (value: string) => (value === 'INCOME' ? 'Receita' : 'Despesa')
+
+  const paymentMethodLabel = (id: string) => {
+    const pm = paymentMethods.find((p) => p.id === id)
+    return pm ? `${pm.name} ${pm.type === 'CREDIT_CARD' ? '(Cartão)' : '(PIX)'}` : id
+  }
+
   useEffect(() => {
     if (transaction && open) {
       reset({
@@ -139,7 +146,9 @@ export function TransactionForm({
               onValueChange={(v) => setValue('type', v as TransactionType)}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Selecione o tipo" />
+                <SelectValue>
+                  {selectedType ? typeLabel(selectedType) : 'Selecione o tipo'}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="INCOME">Receita</SelectItem>
@@ -244,12 +253,14 @@ export function TransactionForm({
               onValueChange={(v: string | null) => v && setValue('payment_method_id', v)}
             >
               <SelectTrigger id="payment_method_id">
-                <SelectValue placeholder="Selecione a conta" />
+                <SelectValue>
+                  {watch('payment_method_id') ? paymentMethodLabel(watch('payment_method_id')) : 'Selecione a conta'}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {paymentMethods.map((pm) => (
                   <SelectItem key={pm.id} value={pm.id}>
-                    {pm.name} {pm.type === 'CREDIT_CARD' && '(Cartão)'}
+                    {pm.name} {pm.type === 'CREDIT_CARD' ? '(Cartão)' : '(PIX)'}
                   </SelectItem>
                 ))}
               </SelectContent>
