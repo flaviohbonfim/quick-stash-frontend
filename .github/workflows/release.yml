@@ -1,0 +1,45 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - run: npm ci
+
+      - run: npm run build
+
+      - name: Create release tag
+        id: tag
+        run: echo "tag=v$(date -u +%Y%m%d%H%M%S)" >> "$GITHUB_OUTPUT"
+
+      - name: Package build
+        run: |
+          tar -czf quickstash-${{ steps.tag.outputs.tag }}.tar.gz \
+            dist/ \
+            package.json \
+            package-lock.json \
+            vite.config.ts \
+            tsconfig.json \
+            tsconfig.app.json \
+            tsconfig.node.json \
+            server.js
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+          name: Release ${{ steps.tag.outputs.tag }}
+          files: quickstash-${{ steps.tag.outputs.tag }}.tar.gz
+          generate_release_notes: true
