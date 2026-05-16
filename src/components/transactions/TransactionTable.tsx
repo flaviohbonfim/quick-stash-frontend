@@ -1,7 +1,8 @@
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { Pencil, Trash2, MoreHorizontal } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import {
   Table,
@@ -97,16 +98,12 @@ export function TransactionTable({
             </TableCell>
             <TableCell>
               <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8"
-                    aria-label={`Ações para ${transaction.description}`}
-                  >
-                    <MoreHorizontal className="h-4 w-4" />
-                    <span className="sr-only">Ações</span>
-                  </Button>
+                <DropdownMenuTrigger
+                  className={cn(buttonVariants({ variant: 'ghost', size: 'icon' }), 'h-8 w-8')}
+                  aria-label={`Ações para ${transaction.description}`}
+                >
+                  <MoreHorizontal className="h-4 w-4" />
+                  <span className="sr-only">Ações</span>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem onClick={() => onEdit(transaction)}>

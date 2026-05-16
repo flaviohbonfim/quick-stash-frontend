@@ -47,15 +47,19 @@ function Button({
   className,
   variant = "default",
   size = "default",
+  children,
   ...props
-}: ButtonPrimitive.Props & VariantProps<typeof buttonVariants>) {
-  const Comp = (props as Record<string, unknown>).asChild ? ButtonPrimitive.Root : ButtonPrimitive
+}: ButtonPrimitive.Props & VariantProps<typeof buttonVariants> & { children?: React.ReactNode }) {
+  const isAsChild = (props as Record<string, unknown>).asChild as boolean | undefined
+  const Comp = isAsChild ? ButtonPrimitive.Root : ButtonPrimitive
   return (
     <Comp
       data-slot="button"
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
-    />
+    >
+      {children}
+    </Comp>
   )
 }
 

@@ -5,7 +5,8 @@ import { z } from 'zod'
 import { CalendarIcon } from 'lucide-react'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
-import { Button } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
@@ -193,20 +194,19 @@ export function TransactionForm({
           <div className="space-y-2">
             <Label>Data</Label>
             <Popover>
-              <PopoverTrigger>
-                <Button
-                  variant="outline"
-                  className={`w-full justify-start text-left font-normal ${
-                    !watch('date') ? 'text-muted-foreground' : ''
-                  }`}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {watch('date') ? (
-                    format(watch('date'), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })
-                  ) : (
-                    'Selecione a data'
-                  )}
-                </Button>
+              <PopoverTrigger
+                className={cn(
+                  buttonVariants({ variant: 'outline' }),
+                  'w-full justify-start text-left font-normal',
+                  !watch('date') && 'text-muted-foreground'
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {watch('date') ? (
+                  format(watch('date'), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })
+                ) : (
+                  'Selecione a data'
+                )}
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0">
                 <Calendar
