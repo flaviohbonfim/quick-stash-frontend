@@ -97,7 +97,7 @@ function AlertIcon({
   className,
   variant = "default",
   ...props
-}: React.ComponentProps<"svg"> &
+}: React.ComponentProps<"span"> &
   VariantProps<typeof iconVariants>) {
   return (
     <span

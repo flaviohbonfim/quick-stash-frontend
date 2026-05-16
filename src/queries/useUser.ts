@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useEffect } from 'react'
 import { toast } from 'sonner'
 import { authService } from '@/services/authService'
 import { userService } from '@/services/userService'
@@ -8,17 +9,22 @@ import type { User } from '@/types/auth'
 export function useUser() {
   const setUser = useAuthStore((state) => state.setUser)
 
-  return useQuery({
+  const query = useQuery<User | null>({
     queryKey: ['user'],
     queryFn: () => authService.getCurrentUser(),
     staleTime: 1000 * 60 * 5,
     retry: 1,
     refetchOnMount: 'always',
     refetchOnWindowFocus: true,
-    onSuccess: (data) => {
-      setUser(data)
-    },
   })
+
+  useEffect(() => {
+    if (query.data) {
+      setUser(query.data)
+    }
+  }, [query.data, setUser])
+
+  return query
 }
 
 export function useUpdateUser() {

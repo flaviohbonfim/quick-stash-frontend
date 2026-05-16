@@ -50,16 +50,14 @@ function Button({
   children,
   ...props
 }: ButtonPrimitive.Props & VariantProps<typeof buttonVariants> & { children?: React.ReactNode }) {
-  const isAsChild = (props as Record<string, unknown>).asChild as boolean | undefined
-  const Comp = isAsChild ? ButtonPrimitive.Root : ButtonPrimitive
   return (
-    <Comp
+    <ButtonPrimitive
       data-slot="button"
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
     >
       {children}
-    </Comp>
+    </ButtonPrimitive>
   )
 }
 

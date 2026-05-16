@@ -10,17 +10,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Skeleton } from '@/components/ui/skeleton'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.08,
-      delayChildren: 0.1,
-    },
-  },
-}
-
 const itemVariants = {
   hidden: { opacity: 0, y: 16 },
   visible: {
@@ -108,7 +97,7 @@ function ProfileSection() {
     )
   }
 
-  if (status === 'error') {
+  if (status === 'error' || !userData) {
     return (
       <Card>
         <CardHeader>
@@ -130,12 +119,12 @@ function ProfileSection() {
   }
 
   const isEditing = editing
-  const displayName = isEditing ? name : (userData?.name ?? '')
-  const displayEmail = isEditing ? email : (userData?.email ?? '')
+  const displayName = isEditing ? name : userData.name
+  const displayEmail = isEditing ? email : userData.email
 
   const handleEdit = () => {
-    setName(userData?.name ?? '')
-    setEmail(userData?.email ?? '')
+    setName(userData.name ?? '')
+    setEmail(userData.email ?? '')
     setEditing(true)
   }
 

@@ -25,17 +25,6 @@ import { EmptyState } from '@/components/common/EmptyState'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { PaymentMethod } from '@/types/transactions'
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.08,
-      delayChildren: 0.1,
-    },
-  },
-}
-
 const itemVariants = {
   hidden: { opacity: 0, y: 16 },
   visible: {
