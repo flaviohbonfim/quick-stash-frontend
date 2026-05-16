@@ -13,6 +13,7 @@ function Separator({
       orientation={orientation}
       className={cn(
         "shrink-0 bg-border data-horizontal:h-px data-horizontal:w-full data-vertical:w-px data-vertical:self-stretch",
+        "data-horizontal:bg-gradient-to-r data-horizontal:from-transparent data-horizontal:via-primary/20 data-horizontal:to-transparent",
         className
       )}
       {...props}

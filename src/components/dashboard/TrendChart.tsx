@@ -1,6 +1,8 @@
 import {
   LineChart,
   Line,
+  Area,
+  AreaChart,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -29,6 +31,14 @@ const cardVariants = {
   },
 }
 
+const tooltipStyle: React.CSSProperties = {
+  backgroundColor: 'rgba(255, 255, 255, 0.85)',
+  backdropFilter: 'blur(12px)',
+  borderColor: 'rgba(139, 92, 246, 0.2)',
+  borderRadius: '12px',
+  boxShadow: '0 10px 25px rgba(0, 0, 0, 0.06), 0 4px 10px rgba(0, 0, 0, 0.04)',
+}
+
 export function TrendChart({ data }: TrendChartProps) {
   return (
     <motion.div variants={cardVariants} initial="hidden" animate="visible">
@@ -43,35 +53,47 @@ export function TrendChart({ data }: TrendChartProps) {
             </div>
           ) : (
             <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={data}>
-                <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+              <AreaChart data={data}>
+                <CartesianGrid strokeDasharray="3 3" stroke="oklch(0 0 0 / 0.04)" />
                 <XAxis
                   dataKey="month"
                   className="text-xs"
-                  tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                  tick={{ fill: 'var(--color-muted-foreground)', fontSize: 11 }}
+                  axisLine={{ stroke: 'var(--color-border)' }}
+                  tickLine={false}
                 />
                 <YAxis
                   tickFormatter={(value) => `R$ ${value}`}
                   className="text-xs"
-                  tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                  tick={{ fill: 'var(--color-muted-foreground)', fontSize: 11 }}
+                  axisLine={false}
+                  tickLine={false}
                 />
                 <Tooltip
-                  formatter={(value: number) => [<CurrencyFormat value={value} />, '']}
-                  contentStyle={{
-                    backgroundColor: 'hsl(var(--card))',
-                    borderColor: 'hsl(var(--border))',
-                    borderRadius: '8px',
-                  }}
+                  formatter={(value: number) => [<CurrencyFormat value={value} />, 'Saldo']}
+                  contentStyle={tooltipStyle}
+                  wrapperStyle={{ outline: 'none' }}
                 />
-                <Line
+                <Area
                   type="monotone"
                   dataKey="balance"
-                  stroke="#3b82f6"
-                  strokeWidth={2}
-                  dot={{ fill: '#3b82f6' }}
-                  activeDot={{ r: 6 }}
+                  stroke="oklch(0.55 0.22 295)"
+                  strokeWidth={2.5}
+                  fill="oklch(0.55 0.22 295 / 0.1)"
+                  dot={{
+                    fill: 'oklch(1 0 0)',
+                    stroke: 'oklch(0.55 0.22 295)',
+                    strokeWidth: 2,
+                    r: 4,
+                  }}
+                  activeDot={{
+                    r: 7,
+                    fill: 'oklch(1 0 0)',
+                    stroke: 'oklch(0.55 0.22 295)',
+                    strokeWidth: 2.5,
+                  }}
                 />
-              </LineChart>
+              </AreaChart>
             </ResponsiveContainer>
           )}
         </CardContent>

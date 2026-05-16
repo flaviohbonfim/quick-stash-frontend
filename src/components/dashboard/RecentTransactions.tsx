@@ -53,13 +53,13 @@ export function RecentTransactions({ transactions }: RecentTransactionsProps) {
                   initial="hidden"
                   animate="visible"
                   whileHover="hover"
-                  className="flex items-center justify-between border-b pb-3 last:border-0 last:pb-0"
+                  className="group flex items-center justify-between border-b border-border/50 pb-3 last:border-0 last:pb-0 transition-colors duration-150 hover:bg-primary/5"
                 >
                   <div className="flex items-center gap-3">
                     <motion.div
                       className={`flex h-10 w-10 items-center justify-center rounded-full ${
                         transaction.type === 'INCOME'
-                          ? 'bg-success/10 text-success'
+                          ? 'bg-primary/10 text-primary'
                           : 'bg-destructive/10 text-destructive'
                       }`}
                       whileHover={{ scale: 1.1, rotate: 5 }}

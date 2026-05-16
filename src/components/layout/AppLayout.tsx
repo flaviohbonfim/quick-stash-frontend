@@ -9,6 +9,7 @@ import {
   SidebarMenuButton,
   useSidebar,
   SidebarInset,
+  SidebarRail,
 } from '@/components/ui/sidebar'
 import { useAuthStore } from '@/stores/authStore'
 import { useNavigate, useLocation } from 'react-router-dom'
@@ -49,31 +50,60 @@ function SidebarNav() {
     navigate('/login')
   }
 
+  const isActive = (path: string) => location.pathname === path
+
   return (
     <>
-      <SidebarHeader className="flex h-14 items-center border-b px-2">
-        {state !== 'collapsed' && (
-          <span className="text-lg font-bold">Quick Stash</span>
+      <SidebarHeader className="flex h-14 items-center px-3">
+        {state !== 'collapsed' ? (
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-[oklch(0.65_0.18_320)] shadow-[0_4px_14px_oklch(0.55_0.22_295/_0.25)]">
+              <Wallet className="h-4 w-4 text-primary-foreground" />
+            </div>
+            <span className="font-['Syne'] bg-gradient-to-r from-primary to-[oklch(0.65_0.18_320)] bg-clip-text text-lg font-bold text-transparent">
+              Quick Stash
+            </span>
+          </div>
+        ) : (
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-[oklch(0.65_0.18_320)]">
+            <Wallet className="h-4 w-4 text-primary-foreground" />
+          </div>
         )}
       </SidebarHeader>
 
-      <SidebarContent>
+      <SidebarContent className="px-2 py-2">
         <SidebarMenu>
           {navItems.map((item, i) => (
             <SidebarMenuItem key={item.path}>
               <motion.div variants={sidebarItemVariants} custom={i}>
                 <SidebarMenuButton
-                  isActive={location.pathname === item.path}
+                  isActive={isActive(item.path)}
                   tooltip={item.label}
                   onClick={() => navigate(item.path)}
                   className={cn(
-                    'transition-colors duration-150',
-                    'hover:bg-accent hover:text-accent-foreground',
-                    'data-[active=true]:bg-accent data-[active=true]:text-accent-foreground data-[active=true]:font-medium',
+                    "group/menu-item relative h-9 rounded-md transition-all duration-200",
+                    isActive(item.path) && "bg-[var(--sidebar-accent)]"
                   )}
                 >
-                  <item.icon className="h-4 w-4" />
-                  <span>{item.label}</span>
+                  {/* Active indicator bar */}
+                  {isActive(item.path) && (
+                    <div
+                      className={cn(
+                        "absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-r-full bg-[var(--sidebar-active-border)] transition-all duration-200",
+                        state === 'collapsed' && "opacity-0"
+                      )}
+                    />
+                  )}
+                  <item.icon className={cn(
+                    "h-4 w-4 shrink-0 transition-colors duration-200",
+                    !isActive(item.path) && "text-sidebar-foreground/50",
+                    isActive(item.path) && "text-[var(--sidebar-accent-foreground)]"
+                  )} />
+                  <span className={cn(
+                    "text-sm transition-colors duration-200",
+                    !isActive(item.path) && "text-sidebar-foreground/70",
+                    isActive(item.path) && "font-medium text-[var(--sidebar-accent-foreground)]"
+                  )}>{item.label}</span>
                 </SidebarMenuButton>
               </motion.div>
             </SidebarMenuItem>
@@ -81,24 +111,23 @@ function SidebarNav() {
         </SidebarMenu>
       </SidebarContent>
 
-      {/* Bottom — Logout only (theme toggle is in Header) */}
-      <motion.div
-        className="border-t p-2"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.3, duration: 0.3 }}
-      >
+      {/* Bottom — Logout */}
+      <div className="mt-auto px-2 pb-3">
         <Button
           variant="ghost"
-          size="icon"
+          size="sm"
           onClick={handleLogout}
-          className="w-full text-destructive hover:text-destructive transition-colors duration-150 hover:bg-accent"
+          className={cn(
+            "w-full justify-start gap-2 text-muted-foreground/60 hover:text-destructive",
+            "hover:bg-destructive/10 transition-all duration-200",
+            state === 'collapsed' && "justify-center px-2"
+          )}
           aria-label="Sair da conta"
         >
-          <LogOut className="h-4 w-4" />
-          <span className="sr-only">Sair</span>
+          <LogOut className="h-4 w-4 shrink-0" />
+          {state !== 'collapsed' && <span className="text-sm">Sair</span>}
         </Button>
-      </motion.div>
+      </div>
     </>
   )
 }
@@ -106,12 +135,13 @@ function SidebarNav() {
 export function AppLayout() {
   return (
     <SidebarProvider defaultOpen={true}>
-      <Sidebar variant="inset" collapsible="icon">
+      <Sidebar variant="sidebar" collapsible="icon" className="border-r" style={{ borderColor: 'var(--panel-border)', boxShadow: 'var(--panel-shadow)' }}>
         <SidebarNav />
+        <SidebarRail />
       </Sidebar>
-      <SidebarInset>
+      <SidebarInset className="bg-background">
         <Header />
-        <main className="flex-1 overflow-auto p-4 md:p-6">
+        <main className="flex-1 overflow-auto p-4 md:p-6 lg:p-8">
           <div className="mx-auto max-w-7xl">
             <Outlet />
           </div>

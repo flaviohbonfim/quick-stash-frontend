@@ -65,7 +65,7 @@ export function TransactionTable({
   return (
     <Table aria-label="Lista de transações">
       <TableHeader>
-        <TableRow>
+        <TableRow className="bg-muted/50">
           <TableHead>Data</TableHead>
           <TableHead>Descrição</TableHead>
           <TableHead>Categoria</TableHead>
@@ -76,7 +76,7 @@ export function TransactionTable({
       </TableHeader>
       <TableBody>
         {transactions.map((transaction) => (
-          <TableRow key={transaction.id}>
+          <TableRow key={transaction.id} className="transition-colors duration-150 hover:bg-primary/5">
             <TableCell className="font-medium">
               {format(new Date(transaction.date), "dd 'de' MMMM", { locale: ptBR })}
             </TableCell>

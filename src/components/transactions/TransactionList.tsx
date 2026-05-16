@@ -15,8 +15,40 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination'
 import type { Transaction } from '@/types/transactions'
 import { motion, AnimatePresence } from 'framer-motion'
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+      delayChildren: 0.1,
+    },
+  },
+}
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 16 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.4,
+      ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
+    },
+  },
+}
 
 export function TransactionList() {
   const [filters, setFilters] = useState<FiltersType>({})
@@ -94,24 +126,37 @@ export function TransactionList() {
   }
 
   return (
-    <div className="space-y-4">
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="space-y-6"
+    >
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Transações</h2>
-        <Button onClick={() => {
-          setEditingTransaction(null)
-          setFormOpen(true)
-        }}>
+      <motion.div variants={itemVariants} className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Transações</h1>
+          <p className="mt-1 text-sm text-muted-foreground">Gerencie suas receitas e despesas</p>
+        </div>
+        <Button
+          onClick={() => {
+            setEditingTransaction(null)
+            setFormOpen(true)
+          }}
+          className="shadow-primary"
+        >
           <Plus className="mr-2 h-4 w-4" />
           Nova Transação
         </Button>
-      </div>
+      </motion.div>
 
       {/* Filters */}
-      <TransactionFilters
-        onFilter={setFilters}
-        paymentMethods={paymentMethods}
-      />
+      <motion.div variants={itemVariants}>
+        <TransactionFilters
+          onFilter={setFilters}
+          paymentMethods={paymentMethods}
+        />
+      </motion.div>
 
       {/* Table or Empty State */}
       {transactions.length > 0 ? (
@@ -126,28 +171,76 @@ export function TransactionList() {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col items-center gap-3 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-sm text-muted-foreground">
                 Mostrando {(page - 1) * limit + 1} a {Math.min(page * limit, total)} de {total} transações
               </p>
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={page === 1}
-                  onClick={() => setPage(p => p - 1)}
-                >
-                  Anterior
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={page === totalPages}
-                  onClick={() => setPage(p => p + 1)}
-                >
-                  Próximo
-                </Button>
-              </div>
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      onClick={() => setPage(p => Math.max(1, p - 1))}
+                      disabled={page === 1}
+                    />
+                  </PaginationItem>
+
+                  {/* Show first page */}
+                  {page > 2 && (
+                    <>
+                      <PaginationItem>
+                        <PaginationLink onClick={() => setPage(1)}>1</PaginationLink>
+                      </PaginationItem>
+                      {page > 3 && (
+                        <PaginationItem>
+                          <PaginationEllipsis />
+                        </PaginationItem>
+                      )}
+                    </>
+                  )}
+
+                  {/* Show pages around current */}
+                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                    let pageNum: number
+                    if (totalPages <= 5) {
+                      pageNum = i + 1
+                    } else if (page <= 3) {
+                      pageNum = i + 1
+                    } else if (page >= totalPages - 2) {
+                      pageNum = totalPages - 4 + i
+                    } else {
+                      pageNum = page - 2 + i
+                    }
+                    return (
+                      <PaginationItem key={pageNum}>
+                        <PaginationLink isActive={pageNum === page} onClick={() => setPage(pageNum)}>
+                          {pageNum}
+                        </PaginationLink>
+                      </PaginationItem>
+                    )
+                  })}
+
+                  {/* Show last page */}
+                  {page < totalPages - 2 && (
+                    <>
+                      {page < totalPages - 3 && (
+                        <PaginationItem>
+                          <PaginationEllipsis />
+                        </PaginationItem>
+                      )}
+                      <PaginationItem>
+                        <PaginationLink onClick={() => setPage(totalPages)}>{totalPages}</PaginationLink>
+                      </PaginationItem>
+                    </>
+                  )}
+
+                  <PaginationItem>
+                    <PaginationNext
+                      onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                      disabled={page === totalPages}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
             </div>
           )}
         </>
@@ -199,6 +292,6 @@ export function TransactionList() {
           </Dialog>
         )}
       </AnimatePresence>
-    </div>
+    </motion.div>
   )
 }

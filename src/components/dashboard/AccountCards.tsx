@@ -53,7 +53,11 @@ export function AccountCards({ accounts }: AccountCardsProps) {
                   initial="hidden"
                   animate="visible"
                   whileHover={{ scale: 1.02, transition: { duration: 0.15 } }}
-                  className="rounded-lg border bg-card p-4 transition-shadow duration-200 hover:shadow-md"
+                  className={`rounded-xl border p-4 transition-all duration-200 ${
+                    account.type === 'CREDIT_CARD'
+                      ? 'border-primary/20 bg-gradient-to-br from-primary/5 to-transparent shadow-card hover:shadow-card-hover'
+                      : 'border-primary/10 bg-gradient-to-br from-primary/3 to-transparent shadow-card hover:shadow-card-hover'
+                  }`}
                 >
                   <div className="flex items-center justify-between">
                     <span className="font-medium">{account.name}</span>

@@ -5,12 +5,14 @@ const pageVariants = {
   initial: {
     opacity: 0,
     y: 12,
+    filter: 'blur(4px)',
   },
   animate: {
     opacity: 1,
     y: 0,
+    filter: 'blur(0px)',
     transition: {
-      duration: 0.25,
+      duration: 0.35,
       ease: [0.22, 1, 0.36, 1],
     },
   },
@@ -18,8 +20,31 @@ const pageVariants = {
     opacity: 0,
     y: -8,
     transition: {
-      duration: 0.15,
+      duration: 0.2,
       ease: 'easeInOut',
+    },
+  },
+}
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+      delayChildren: 0.1,
+    },
+  },
+}
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 10 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.3,
+      ease: [0.22, 1, 0.36, 1],
     },
   },
 }
@@ -35,7 +60,9 @@ export function PageTransition() {
       exit="exit"
       variants={pageVariants}
     >
-      <Outlet />
+      <motion.div variants={containerVariants}>
+        <Outlet />
+      </motion.div>
     </motion.div>
   )
 }

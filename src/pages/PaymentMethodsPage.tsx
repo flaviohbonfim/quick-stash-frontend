@@ -25,6 +25,29 @@ import { EmptyState } from '@/components/common/EmptyState'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { PaymentMethod } from '@/types/transactions'
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+      delayChildren: 0.1,
+    },
+  },
+}
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 16 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.4,
+      ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
+    },
+  },
+}
+
 const cardVariants = {
   hidden: { opacity: 0, y: 20, scale: 0.97 },
   visible: (i: number) => ({
@@ -38,6 +61,15 @@ const cardVariants = {
     },
   }),
   exit: { opacity: 0, scale: 0.95, transition: { duration: 0.15 } },
+}
+
+const pageVariants = {
+  hidden: { opacity: 0, y: 8 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.3, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
+  },
 }
 
 export default function PaymentMethodsPage() {
@@ -78,19 +110,27 @@ export default function PaymentMethodsPage() {
   }
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
+    <motion.div
+      variants={pageVariants}
+      initial="hidden"
+      animate="visible"
+      className="p-6 space-y-6"
+    >
+      <motion.div variants={itemVariants} className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Contas</h1>
-          <p className="mt-2 text-muted-foreground">
+          <h1 className="text-3xl font-bold tracking-tight">Contas</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
             Gerencie seus meios de pagamento
           </p>
         </div>
-        <Button onClick={() => setFormOpen(true)}>
+        <Button
+          onClick={() => setFormOpen(true)}
+          className="shadow-primary"
+        >
           <Plus className="mr-2 h-4 w-4" />
           Nova Conta
         </Button>
-      </div>
+      </motion.div>
 
       {paymentMethods.length === 0 ? (
         <EmptyState
@@ -110,8 +150,13 @@ export default function PaymentMethodsPage() {
                 initial="hidden"
                 animate="visible"
                 exit="exit"
+                whileHover={{ scale: 1.02, transition: { duration: 0.15 } }}
               >
-                <Card>
+                <Card className={`border transition-all duration-200 ${
+                  pm.type === 'CREDIT_CARD'
+                    ? 'border-primary/20 bg-gradient-to-br from-primary/5 to-transparent shadow-card hover:shadow-card-hover'
+                    : 'border-primary/10 bg-gradient-to-br from-primary/3 to-transparent shadow-card hover:shadow-card-hover'
+                }`}>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">{pm.name}</CardTitle>
                 <Badge variant={pm.type === 'CREDIT_CARD' ? 'destructive' : 'outline'}>
@@ -213,6 +258,6 @@ export default function PaymentMethodsPage() {
           </Dialog>
         )}
       </AnimatePresence>
-    </div>
+    </motion.div>
   )
 }

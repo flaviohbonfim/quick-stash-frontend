@@ -30,6 +30,14 @@ const cardVariants = {
   },
 }
 
+const tooltipStyle: React.CSSProperties = {
+  backgroundColor: 'rgba(255, 255, 255, 0.85)',
+  backdropFilter: 'blur(12px)',
+  borderColor: 'rgba(139, 92, 246, 0.2)',
+  borderRadius: '12px',
+  boxShadow: '0 10px 25px rgba(0, 0, 0, 0.06), 0 4px 10px rgba(0, 0, 0, 0.04)',
+}
+
 export function IncomeExpenseChart({ data }: IncomeExpenseChartProps) {
   return (
     <motion.div variants={cardVariants} initial="hidden" animate="visible">
@@ -45,36 +53,40 @@ export function IncomeExpenseChart({ data }: IncomeExpenseChartProps) {
           ) : (
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={data}>
-                <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                <CartesianGrid strokeDasharray="3 3" stroke="oklch(0 0 0 / 0.04)" />
                 <XAxis
                   dataKey="month"
                   className="text-xs"
-                  tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                  tick={{ fill: 'var(--color-muted-foreground)', fontSize: 11 }}
+                  axisLine={{ stroke: 'var(--color-border)' }}
+                  tickLine={false}
                 />
                 <YAxis
                   tickFormatter={(value) => `R$ ${value}`}
                   className="text-xs"
-                  tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                  tick={{ fill: 'var(--color-muted-foreground)', fontSize: 11 }}
+                  axisLine={false}
+                  tickLine={false}
                 />
                 <Tooltip
                   formatter={(value: number) => [<CurrencyFormat value={value} />, '']}
-                  contentStyle={{
-                    backgroundColor: 'hsl(var(--card))',
-                    borderColor: 'hsl(var(--border))',
-                    borderRadius: '8px',
-                  }}
+                  cursor={{ fill: 'oklch(0.55 0.22 295 / 0.05)' }}
+                  contentStyle={tooltipStyle}
+                  wrapperStyle={{ outline: 'none' }}
                 />
                 <Bar
                   dataKey="income"
-                  fill="#10b981"
-                  radius={[4, 4, 0, 0]}
+                  fill="oklch(0.55 0.22 295)"
+                  radius={[6, 6, 0, 0]}
                   name="Receita"
+                  maxBarSize={32}
                 />
                 <Bar
                   dataKey="expense"
-                  fill="#ef4444"
-                  radius={[4, 4, 0, 0]}
+                  fill="oklch(0.55 0.22 25)"
+                  radius={[6, 6, 0, 0]}
                   name="Despesa"
+                  maxBarSize={32}
                 />
               </BarChart>
             </ResponsiveContainer>

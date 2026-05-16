@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { useNavigate } from 'react-router-dom'
-import { useSidebar, SidebarTrigger } from '@/components/ui/sidebar'
+import { useSidebar } from '@/components/ui/sidebar'
 
 export function Header() {
   const navigate = useNavigate()
@@ -37,10 +37,7 @@ export function Header() {
   }
 
   return (
-    <header className="flex h-14 items-center border-b bg-card px-4">
-      {/* Desktop sidebar toggle */}
-      <SidebarTrigger className="hidden md:block" />
-
+    <header className="flex h-14 items-center border-b bg-[var(--sidebar-bg)] px-3" style={{ borderBottomColor: 'var(--panel-border)' }}>
       {/* Mobile hamburger */}
       <Button
         variant="ghost"
@@ -51,36 +48,39 @@ export function Header() {
         <Menu size={20} />
       </Button>
 
-      <div className="ml-auto flex items-center gap-2">
+      <div className="ml-auto flex items-center gap-1.5">
         {/* Theme toggle */}
         <Button
           variant="ghost"
           size="icon"
           onClick={toggleTheme}
           aria-label={theme === 'dark' ? 'Ativar modo claro' : 'Ativar modo escuro'}
+          className="transition-transform duration-200 hover:scale-105"
         >
-          {theme === 'dark' ? (
-            <Sun className="h-4 w-4" />
-          ) : (
-            <Moon className="h-4 w-4" />
-          )}
+          <div className={theme === 'dark' ? 'animate-spin-slow' : ''}>
+            {theme === 'dark' ? (
+              <Sun className="h-4 w-4" />
+            ) : (
+              <Moon className="h-4 w-4" />
+            )}
+          </div>
         </Button>
 
         {/* User menu */}
         <DropdownMenu>
           <DropdownMenuTrigger>
-            <div className="relative h-8 w-8 cursor-pointer rounded-full outline-none ring-offset-2 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+            <div className="relative h-8 w-8 cursor-pointer rounded-full outline-none ring-offset-2 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 transition-shadow hover:shadow-[0_0_0_3px_var(--sidebar-accent)]">
               <Avatar className="h-8 w-8">
-                <AvatarFallback>{getInitials()}</AvatarFallback>
+                <AvatarFallback className="text-[11px] font-semibold">{getInitials()}</AvatarFallback>
               </Avatar>
             </div>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>{user?.name || 'Usuário'}</DropdownMenuLabel>
+          <DropdownMenuContent align="end" className="min-w-[160px]">
+            <DropdownMenuLabel className="text-sm">{user?.name || 'Usuário'}</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={() => navigate('/settings')}
-              className="cursor-pointer"
+              className="cursor-pointer text-sm"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -92,7 +92,7 @@ export function Header() {
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="mr-2"
+                className="mr-2.5"
               >
                 <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
                 <circle cx="12" cy="7" r="4" />
@@ -102,9 +102,9 @@ export function Header() {
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={handleLogout}
-              className="cursor-pointer text-destructive focus:text-destructive"
+              className="cursor-pointer text-sm text-destructive focus:text-destructive"
             >
-              <LogOut size={16} className="mr-2" />
+              <LogOut size={16} className="mr-2.5" />
               Sair
             </DropdownMenuItem>
           </DropdownMenuContent>
