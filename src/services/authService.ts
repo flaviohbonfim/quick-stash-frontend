@@ -1,4 +1,5 @@
 import api from '@/lib/api'
+import { useAuthStore } from '@/stores/authStore'
 import type { LoginRequest, RegisterRequest, TokenResponse, User } from '@/types/auth'
 
 export const authService = {
@@ -22,11 +23,19 @@ export const authService = {
   },
 
   async getCurrentUser(): Promise<User | null> {
-    const response = await api.get<User[]>('/users')
-    const data = response.data
-    if (!Array.isArray(data) || data.length === 0) {
+    const { accessToken } = useAuthStore.getState()
+    if (!accessToken) return null
+
+    let userId: string
+    try {
+      const payload = JSON.parse(atob(accessToken.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')))
+      userId = payload.sub
+      if (!userId) return null
+    } catch {
       return null
     }
-    return data[0]
+
+    const response = await api.get<User>(`/users/${userId}`)
+    return response.data
   },
 }
