@@ -144,6 +144,15 @@ server {
     ssl_ciphers         HIGH:!aNULL:!MD5;
     ssl_prefer_server_ciphers on;
 
+    location /api/ {
+        proxy_pass         http://localhost:8000/;
+        proxy_http_version 1.1;
+        proxy_set_header   Host \$host;
+        proxy_set_header   X-Real-IP \$remote_addr;
+        proxy_set_header   X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto \$scheme;
+    }
+
     location / {
         proxy_pass         http://localhost:3001;
         proxy_http_version 1.1;
@@ -169,10 +178,8 @@ section "VARIÁVEIS DE AMBIENTE DA APLICAÇÃO"
 echo "Informe as variáveis de ambiente da aplicação:"
 echo
 
-read -rsp "  VITE_API_URL (ex: https://acertodev.apti.dev/api): " VITE_API_URL; echo
-read -rsp "  BACKEND_URL (ex: https://acertodev.apti.dev/api): " BACKEND_URL; echo
+read -rsp "  BACKEND_URL (ex: https://quickstash.apti.dev/api): " BACKEND_URL; echo
 
-[[ -n "$VITE_API_URL" ]] || error "VITE_API_URL não pode ser vazio."
 [[ -n "$BACKEND_URL" ]]  || error "BACKEND_URL não pode ser vazio."
 
 # ---------------------------------------------------------------------------
@@ -184,7 +191,6 @@ ssh_run "sudo mkdir -p $APP_DIR && sudo chown ubuntu:ubuntu $APP_DIR"
 
 info "Criando .env.local..."
 ssh_run "cat > $APP_DIR/.env.local << EOF
-VITE_API_URL=$VITE_API_URL
 BACKEND_URL=$BACKEND_URL
 NODE_ENV=production
 EOF
